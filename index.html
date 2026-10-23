@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rafael Casino Night</title>
+<link rel="icon" href="Cartas.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="suits"></div>
+<main>
+  <div class="frame"><div class="card">
+    <span class="corner tl">♠</span><span class="corner tr" style="color:var(--red)">♥</span>
+    <span class="corner bl" style="color:var(--red)">♦</span><span class="corner br">♣</span>
+
+    <!-- CAPA -->
+    <section class="hero" id="cover">
+      <img class="logo" src="Logo do Evento.png" alt="Rafael Casino Night">
+    
+
+      <div class="divider">♠ ♥ ♣ ♦</div>
+
+      <div class="details">
+        <div class="detail"><small>Data</small><strong>21 Nov</strong><span>Sábado</span></div>
+                <div class="detail"><small>Dress Code</small><strong>Semi-Formal</strong><span></span></div>
+        <div class="detail"><small>Horário</small><strong>17:00</strong><span>até às 21:00</span></div>
+        <div class="detail"><small>Local</small><strong>Casa do Rafael</strong></div>
+      </div>
+
+      <div class="row">
+        <button class="btn red" id="openRsvp">Confirmar Presença</button>
+        <a class="btn ghost" id="mapLink" href="#" target="_blank" rel="noopener">Ver Localização</a>
+      </div>
+    </section>
+
+    <!-- RSVP -->
+    <section id="rsvp" style="display:none">
+      <h2>Reserve o seu lugar à mesa</h2>
+      <p class="sub">Três passos. A casa aguarda a sua resposta.</p>
+      <div class="steps"><i class="on"></i><i></i><i></i></div>
+
+      <div class="step show" data-step="1">
+        <label for="nome">O seu nome</label>
+        <input type="text" id="nome" maxlength="80" placeholder="Nome e apelido" autocomplete="name">
+        <div class="err" id="e1"></div>
+        <div class="row"><button class="btn" data-next>Continuar</button></div>
+      </div>
+
+      <div class="step" data-step="2">
+        <label>Estará presente?</label>
+        <div class="choices">
+          <div class="choice yes" data-v="sim"><span class="ic">♠</span>Estarei lá<small>Conte comigo</small></div>
+          <div class="choice no" data-v="nao"><span class="ic">♦</span>Não poderei<small>Infelizmente não</small></div>
+        </div>
+        <div class="err" id="e2"></div>
+        <div class="row"><button class="btn ghost" data-back>Voltar</button><button class="btn" data-next>Continuar</button></div>
+      </div>
+
+      <div class="step" data-step="3">
+        <label for="nota">Sugestão ou observação <span style="opacity:.6">(opcional)</span></label>
+        <textarea id="nota" maxlength="500" placeholder="Alergias, sugestões de música, quem o acompanha…"></textarea>
+        <div class="err" id="e3"></div>
+        <div class="row"><button class="btn ghost" data-back>Voltar</button><button class="btn red" id="send">Confirmar</button></div>
+      </div>
+    </section>
+
+    <!-- FINAL -->
+    <section class="done" id="done" style="display:none">
+      <div class="chip">♠</div>
+      <h2 id="doneTitle"></h2>
+      <p class="sub" id="doneText"></p>
+      <div class="row"><a class="btn ghost" id="mapLink2" href="#" target="_blank" rel="noopener">Ver Localização</a></div>
+    </section>
+  </div></div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCA2uFUGcJy1BT7l6K_iJOAJLAvpKhdgxQ",
+  authDomain: "rafael-diogo.firebaseapp.com",
+  databaseURL: "https://rafael-diogo-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rafael-diogo",
+  storageBucket: "rafael-diogo.firebasestorage.app",
+  messagingSenderId: "393645739677",
+  appId: "1:393645739677:web:5ebbdc7232d991206f0e74",
+  measurementId: "G-ZXWLFQQCZJ"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// >>> COLOCA AQUI O TEU LINK (Google Maps, etc.) <<<
+const LINK_LOCALIZACAO = "#";
+
+const $ = s => document.querySelector(s);
+$('#mapLink').href = $('#mapLink2').href = LINK_LOCALIZACAO;
+
+// símbolos a subir
+const sw = $('#suits');
+['♠','♥','♣','♦'].forEach((s,i)=>{for(let k=0;k<4;k++){
+  const e=document.createElement('span');e.textContent=s;if(s=='♥'||s=='♦')e.className='r';
+  e.style.left=Math.random()*100+'%';e.style.animationDuration=(14+Math.random()*14)+'s';
+  e.style.animationDelay=(Math.random()*-20)+'s';e.style.fontSize=(18+Math.random()*26)+'px';sw.appendChild(e);}});
+
+let step=1, vem=null;
+const steps=[...document.querySelectorAll('.step')], bars=[...document.querySelectorAll('.steps i')];
+function go(n){step=n;steps.forEach(s=>s.classList.toggle('show',+s.dataset.step===n));bars.forEach((b,i)=>b.classList.toggle('on',i<n));}
+
+$('#openRsvp').onclick=()=>{$('#cover').style.display='none';$('#rsvp').style.display='block';$('#nome').focus();window.scrollTo({top:0,behavior:'smooth'})};
+document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>go(step-1));
+document.querySelectorAll('[data-next]').forEach(b=>b.onclick=()=>{
+  if(step===1){ if($('#nome').value.trim().length<2){$('#e1').textContent='Por favor, indique o seu nome.';return;} $('#e1').textContent=''; }
+  if(step===2){ if(!vem){$('#e2').textContent='Escolha uma opção.';return;} $('#e2').textContent=''; }
+  go(step+1);
+});
+$('#nome').addEventListener('keydown',e=>{if(e.key==='Enter')document.querySelector('[data-step="1"] [data-next]').click()});
+document.querySelectorAll('.choice').forEach(c=>c.onclick=()=>{
+  vem=c.dataset.v;document.querySelectorAll('.choice').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');$('#e2').textContent='';
+});
+
+$('#send').onclick=async()=>{
+  const btn=$('#send');btn.disabled=true;$('#e3').textContent='';
+  const nome=$('#nome').value.trim();
+  try{
+    await db.ref('convidados').push({nome,vem,nota:$('#nota').value.trim(),ts:firebase.database.ServerValue.TIMESTAMP});
+    $('#rsvp').style.display='none';$('#done').style.display='block';
+    const p=nome.split(' ')[0];
+    if(vem==='sim'){$('#doneTitle').textContent=`Bem-vindo à mesa, ${p}.`;$('#doneText').textContent='A sua presença está confirmada. 21 de Novembro, das 17:00 às 21:00. Vista-se a rigor — as apostas estão abertas.';}
+    else{$('#doneTitle').textContent=`Obrigado, ${p}.`;$('#doneText').textContent='Lamentamos a sua ausência. A sua resposta ficou registada.';$('.chip').textContent='♦';}
+  }catch(e){console.error(e);$('#e3').textContent='Não foi possível enviar. Tente novamente.';btn.disabled=false;}
+};
+</script>
+</body>
+</html>

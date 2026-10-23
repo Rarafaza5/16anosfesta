@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "convidados": {
+      ".read": true,
+      "$id": {
+        ".write": "!data.exists()",
+        ".validate": "newData.hasChildren(['nome','vem'])"
+      }
+    }
+  }
+}
