@@ -72,7 +72,7 @@
       <div class="chip">♠</div>
       <h2 id="doneTitle"></h2>
       <p class="sub" id="doneText"></p>
-      <div class="row"><a class="btn ghost" id="mapLink2" href="#" target="_blank" rel="noopener">Ver Localização</a></div>
+      <div class="row"><a class="btn ghost" id="mapLink2" href="https://maps.app.goo.gl/1Ec73XmRQAXzigX66" target="_blank" rel="noopener">Ver Localização</a></div>
     </section>
   </div></div>
 </main>
@@ -94,7 +94,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // >>> COLOCA AQUI O TEU LINK (Google Maps, etc.) <<<
-const LINK_LOCALIZACAO = "#";
+const LINK_LOCALIZACAO = "https://maps.app.goo.gl/1Ec73XmRQAXzigX66";
 
 const $ = s => document.querySelector(s);
 $('#mapLink').href = $('#mapLink2').href = LINK_LOCALIZACAO;
