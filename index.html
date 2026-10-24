@@ -24,7 +24,7 @@
       <div class="divider">♠ ♥ ♣ ♦</div>
 
       <div class="details">
-        <div class="detail"><small>Data</small><strong>21 Nov</strong><span>Sábado</span></div>
+        <div class="detail"><small>Data</small><strong>14 Nov</strong><span>Sábado</span></div>
                 <div class="detail"><small>Dress Code</small><strong>Semi-Formal</strong><span></span></div>
         <div class="detail"><small>Horário</small><strong>17:00</strong><span>até às 21:00</span></div>
         <div class="detail"><small>Local</small><strong>Casa do Rafael</strong></div>
@@ -129,7 +129,7 @@ $('#send').onclick=async()=>{
     await db.ref('convidados').push({nome,vem,nota:$('#nota').value.trim(),ts:firebase.database.ServerValue.TIMESTAMP});
     $('#rsvp').style.display='none';$('#done').style.display='block';
     const p=nome.split(' ')[0];
-    if(vem==='sim'){$('#doneTitle').textContent=`Bem-vindo à mesa, ${p}.`;$('#doneText').textContent='A sua presença está confirmada. 21 de Novembro, das 17:00 às 21:00. Vista-se a rigor — as apostas estão abertas.';}
+    if(vem==='sim'){$('#doneTitle').textContent=`Bem-vindo à mesa, ${p}.`;$('#doneText').textContent='A sua presença está confirmada. 14 de Novembro, das 17:00 às 21:00. Vista-se a rigor — as apostas estão abertas.';}
     else{$('#doneTitle').textContent=`Obrigado, ${p}.`;$('#doneText').textContent='Lamentamos a sua ausência. A sua resposta ficou registada.';$('.chip').textContent='♦';}
   }catch(e){console.error(e);$('#e3').textContent='Não foi possível enviar. Tente novamente.';btn.disabled=false;}
 };
