@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<title>Bingo · Controlo Remoto</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="Cartas.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07090a;--red:#e0222a;--red-d:#9d1117;--gold:#d9b25f;--gold-l:#f5e3a6;--gold-d:#8c6a2a;--ink:#f4efe3;--mute:#a9a291;
+--serif:'Cormorant Garamond',Georgia,serif;--sans:'Montserrat',system-ui,sans-serif;--line:rgba(217,178,95,.25)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--ink);min-height:100vh;padding:28px 18px 70px;
+background:radial-gradient(ellipse 80% 45% at 50% -5%,rgba(224,34,42,.18),transparent 70%),radial-gradient(ellipse 80% 40% at 50% 110%,rgba(20,90,60,.28),transparent 70%),var(--bg)}
+main{max-width:520px;margin:auto}
+header{text-align:center;margin-bottom:26px}
+header img{height:70px;filter:drop-shadow(0 0 14px rgba(224,34,42,.4))}
+.cap{font-size:10px;font-weight:300;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);padding-left:.55em;margin-top:10px}
+.sec{border-top:1px solid var(--line);padding:22px 0}
+.lbl{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.now{text-align:center}
+#cur{font-family:var(--serif);font-weight:300;font-size:110px;line-height:1;background:linear-gradient(180deg,var(--gold-l),var(--gold) 55%,var(--gold-d));-webkit-background-clip:text;background-clip:text;color:transparent}
+#st{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--mute);margin-top:4px}
+#lst{font-family:var(--serif);font-size:19px;color:var(--mute);min-height:26px;margin-top:6px;letter-spacing:.1em}
+.btn{width:100%;cursor:pointer;font:400 11px var(--sans);letter-spacing:.3em;text-transform:uppercase;padding:17px 10px;border-radius:2px;color:var(--gold);background:none;border:1px solid var(--gold);transition:.25s}
+.btn:hover{background:rgba(217,178,95,.1)}
+.btn.on{background:rgba(217,178,95,.16);color:var(--gold-l)}
+.btn.main{color:#1a1204;font-weight:600;font-size:13px;padding:24px 10px;border:0;background:linear-gradient(135deg,var(--gold-l),var(--gold) 50%,var(--gold-d));box-shadow:0 8px 28px rgba(217,178,95,.22)}
+.btn.main:hover{filter:brightness(1.08)}
+.btn.red{color:#ff8a8f;border-color:var(--red-d)}
+.btn.red:hover{background:rgba(224,34,42,.12)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;font-size:13px;font-weight:300;letter-spacing:.06em}
+.row small{display:block;color:var(--mute);font-size:11px;margin-top:3px}
+.sw{position:relative;width:46px;height:24px;flex:none}
+.sw input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;z-index:2}
+.sw i{position:absolute;inset:0;border-radius:20px;border:1px solid var(--gold);transition:.2s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--mute);transition:.2s}
+.sw input:checked+i{background:rgba(217,178,95,.22)}
+.sw input:checked+i::after{left:25px;background:var(--gold-l)}
+input[type=range]{width:100%;accent-color:var(--gold);margin:8px 0 2px}
+.rv{display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
+.rv b{color:var(--gold-l);font-weight:400;font-family:var(--serif);font-size:20px}
+.bar{height:2px;background:var(--line);margin-top:14px;overflow:hidden}
+.bar div{height:100%;width:0;background:var(--gold)}
+#grid{display:grid;grid-template-columns:repeat(10,1fr);gap:2px}
+#grid div{text-align:center;padding:8px 0;font-family:var(--serif);font-size:15px;color:#4d4d46;cursor:pointer;border-radius:50%}
+#grid div.hit{color:var(--gold-l);background:rgba(217,178,95,.14)}
+.hint{font-family:var(--serif);font-style:italic;color:var(--mute);font-size:15px;text-align:center;margin-top:12px}
+</style>
+</head>
+<body>
+<main>
+<header><img src="Logo do Evento.png" alt=""><div class="cap">Controlo Remoto · Bingo</div></header>
+
+<div class="now">
+  <div id="cur">–</div>
+  <div id="st"></div>
+  <div id="lst"></div>
+</div>
+
+<div class="sec" style="border:0;padding-top:10px">
+  <button class="btn main" id="draw">Tirar bola</button>
+  <div class="g2"><button class="btn" id="undo">Anular última</button><button class="btn" id="hist">Bolas que saíram</button></div>
+  <div class="g2"><button class="btn" id="start">Jogo na TV</button><button class="btn" id="idleBtn">Ecrã de espera</button></div>
+</div>
+
+<div class="sec">
+  <div class="lbl">Modo automático</div>
+  <button class="btn" id="auto">Iniciar automático</button>
+  <div class="rv" style="margin-top:18px"><span>Intervalo entre bolas</span><b id="ivl"></b></div>
+  <input type="range" id="speed" min="1" max="15" step="1">
+  <div class="bar"><div id="prog"></div></div>
+</div>
+
+<div class="sec">
+  <div class="lbl">Som</div>
+  <div class="row"><div>Sinal sonoro<small>Toque suave a cada número</small></div><label class="sw"><input type="checkbox" id="sound"><i></i></label></div>
+  <div class="row"><div>Voz a cantar o número<small>Voz neural em português, número e dígitos</small></div><label class="sw"><input type="checkbox" id="voice"><i></i></label></div>
+  <div class="row"><div>Som na TV<small>Clica uma vez no ecrã da TV para ativar</small></div><label class="sw"><input type="checkbox" id="soundTv"><i></i></label></div>
+  <div class="row"><div>Sinal neste painel</div><label class="sw"><input type="checkbox" id="soundHere"><i></i></label></div>
+  <div class="rv" style="margin-top:8px"><span>Volume</span><b id="vv"></b></div>
+  <input type="range" id="vol" min="0.1" max="1" step="0.05">
+  <div class="g2"><button class="btn" id="test">Testar sinal</button><button class="btn" id="testv">Testar voz</button></div>
+</div>
+
+<div class="sec">
+  <div class="lbl">Números</div>
+  <div id="grid"></div>
+  <p class="hint">Toca num número para o marcar ou desmarcar.</p>
+</div>
+
+<div class="sec"><button class="btn red" id="reset">Reiniciar jogo</button></div>
+</main>
+
+<script>
+const KEY='bingo_state',CH='bingo_channel',$=id=>document.getElementById(id);
+let ch;try{ch=new BroadcastChannel(CH)}catch(e){}
+const def={phase:'idle',drawn:[],history:false,sound:true,soundTv:true,soundHere:false,voice:true,volume:.5,speed:6,seq:0,lastEvent:''};
+let st;try{st=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+st=Object.assign({},def,st||{});st.speed=Math.min(15,Math.max(1,st.speed));
+let autoOn=false,nextAt=0,timer=null;
+
+let actx;
+function chime(vol){
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume();
+  const c=actx,t=c.currentTime,out=c.createGain(),lp=c.createBiquadFilter();
+  lp.type='lowpass';lp.frequency.value=1800;out.connect(lp);lp.connect(c.destination);
+  out.gain.setValueAtTime(0,t);out.gain.linearRampToValueAtTime(Math.max(.01,vol)*.35,t+.12);out.gain.exponentialRampToValueAtTime(.0008,t+2.6);
+  [[523.25,0],[783.99,.18]].forEach(([f,d])=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.value=d?.6:1;o.connect(g);g.connect(out);o.start(t+d);o.stop(t+2.7)})}catch(e){}
+}
+function save(ev){st.lastEvent=ev||'';if(ev==='draw')st.seq++;localStorage.setItem(KEY,JSON.stringify(st));ch&&ch.postMessage(st);ui()}
+function ui(){
+  const d=st.drawn;
+  $('cur').textContent=d.length?d[d.length-1]:'–';
+  $('st').textContent='TV: '+(st.phase==='playing'?(st.history?'bolas que saíram':'jogo'):'ecrã de espera')+' · '+d.length+' de 90';
+  $('lst').textContent=d.length>1?d.slice(-6,-1).reverse().join('  ·  '):'';
+  $('hist').classList.toggle('on',!!st.history);
+  $('start').classList.toggle('on',st.phase==='playing'&&!st.history);
+  $('idleBtn').classList.toggle('on',st.phase!=='playing');
+  $('auto').textContent=autoOn?'Parar automático':'Iniciar automático';$('auto').classList.toggle('on',autoOn);
+  ['sound','soundTv','soundHere','voice'].forEach(k=>$(k).checked=!!st[k]);
+  $('vol').value=st.volume;$('vv').textContent=Math.round(st.volume*100)+'%';
+  $('speed').value=st.speed;$('ivl').textContent=st.speed+' s';
+  for(let i=1;i<=90;i++)$('g'+i).className=d.includes(i)?'hit':'';
+}
+for(let i=1;i<=90;i++){const e=document.createElement('div');e.id='g'+i;e.textContent=i;
+  e.onclick=()=>{const k=st.drawn.indexOf(i);k>=0?st.drawn.splice(k,1):st.drawn.push(i);save()};$('grid').appendChild(e)}
+
+function draw(){
+  const left=[];for(let i=1;i<=90;i++)if(!st.drawn.includes(i))left.push(i);
+  if(!left.length){stopAuto();return false}
+  st.drawn.push(left[Math.floor(Math.random()*left.length)]);
+  st.phase='playing';st.history=false;save('draw');
+  if(st.sound&&st.soundHere)chime(st.volume);
+  if(left.length===1)stopAuto();
+  return true;
+}
+function tick(){
+  if(!autoOn)return;
+  const total=st.speed*1000,rem=nextAt-Date.now();
+  $('prog').style.width=Math.max(0,Math.min(100,(1-rem/total)*100))+'%';
+  if(rem<=0){if(draw()&&autoOn)nextAt=Date.now()+st.speed*1000}
+}
+function startAuto(){autoOn=true;nextAt=Date.now()+st.speed*1000;timer=setInterval(tick,100);ui()}
+function stopAuto(){autoOn=false;clearInterval(timer);$('prog').style.width='0';ui()}
+
+$('draw').onclick=()=>{draw();if(autoOn)nextAt=Date.now()+st.speed*1000};
+$('auto').onclick=()=>autoOn?stopAuto():(st.phase='playing',st.history=false,save(),startAuto());
+$('start').onclick=()=>{st.phase='playing';st.history=false;save()};
+$('idleBtn').onclick=()=>{st.phase='idle';st.history=false;save()};
+$('hist').onclick=()=>{st.phase='playing';st.history=!st.history;save()};
+$('undo').onclick=()=>{st.drawn.pop();save()};
+['sound','soundTv','soundHere','voice'].forEach(k=>$(k).onchange=e=>{st[k]=e.target.checked;save()});
+$('vol').oninput=e=>{st.volume=+e.target.value;save()};
+$('speed').oninput=e=>{st.speed=+e.target.value;if(autoOn)nextAt=Date.now()+st.speed*1000;save()};
+$('test').onclick=()=>{if(st.soundHere)chime(st.volume);ch&&ch.postMessage({test:'chime',volume:st.volume})};
+$('testv').onclick=()=>ch&&ch.postMessage({test:'voice',n:47});
+$('reset').onclick=()=>{if(confirm('Reiniciar o jogo? Todas as bolas serão apagadas.')){stopAuto();st=Object.assign({},st,{phase:'idle',drawn:[],history:false});save()}};
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|BUTTON/.test(e.target.tagName)){e.preventDefault();$('draw').click()}});
+save();
+</script>
+</body>
+</html>
+
+
